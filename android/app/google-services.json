@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "655088270001",
+    "project_id": "electricity-calculator-7efa9",
+    "storage_bucket": "electricity-calculator-7efa9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:655088270001:android:f702983b90eab99c3b8090",
+        "android_client_info": {
+          "package_name": "com.example.electricity_calc"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "655088270001-iel2jqpqjasca6nta0j1uqloeja7hdk1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD6AkSPoCY2LVtr0VbawBvhGWyv6yRssC8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "655088270001-iel2jqpqjasca6nta0j1uqloeja7hdk1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
