@@ -164,7 +164,7 @@ class _RegisterState extends State<Register> {
                           ElevatedButton.icon(
                             onPressed: () async{
                               if(_formkey.currentState.validate()){
-                                Users users = new Users("", ctrlName.text, ctrlPhone.text, ctrlEmail.text, ctrlPassword.text, "", 0, "", "");
+                                Users users = new Users("", ctrlName.text, ctrlPhone.text, ctrlEmail.text, ctrlPassword.text, "", 0, 1, "", "");
                                 await AuthServices.signUp(users).then((value){
                                   if(value == "success"){
                                     setState(() {

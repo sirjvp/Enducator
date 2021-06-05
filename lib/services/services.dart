@@ -15,3 +15,4 @@ import 'package:intl/intl.dart';
 part 'auth_services.dart';
 part 'activity_services.dart';
 part 'device_services.dart';
+part 'calculate_services.dart';

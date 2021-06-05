@@ -34,9 +34,11 @@ class MyApp extends StatelessWidget {
         Login.routeName: (context) => Login(),
         Register.routeName: (context) => Register(),
         Home.routeName: (context) => Home(),
+        AddDevice.routeName: (context) => AddDevice(),
         DetailDevice.routeName: (context) => DetailDevice(),
         Setting.routeName: (context) => Setting(),
         EditProfile.routeName: (context) => EditProfile(),
+        ReportDetail.routeName: (context) => ReportDetail(),
       },
     );
   }

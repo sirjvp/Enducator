@@ -25,6 +25,7 @@ class _EditProfileState extends State<EditProfile> {
   String email = "";
   String phone = "";
   String password = "";
+  String avatar = "";
 
   Future chooseFile(String type) async{
     ImageSource imgSrc;
@@ -101,10 +102,11 @@ class _EditProfileState extends State<EditProfile> {
     String uid = auth.currentUser.uid;
     await userCollection.doc(uid).get().then((value) {
       setState(() {
-        name = value['name'].toString();
+        name = value['name'];
         email = auth.currentUser.email;
-        phone = value['phone'].toString();
-        password = value['password'].toString();
+        phone = value['phone'];
+        password = value['password'];
+        avatar = value['avatar'];
       });
     });
   }
@@ -141,31 +143,6 @@ class _EditProfileState extends State<EditProfile> {
                   child: Column(
                     children: [
                       SizedBox(height: 24),
-                      // TextFormField(
-                      //   // controller: ctrlName,
-                      //   keyboardType: TextInputType.name,
-                      //   style: TextStyle(
-                      //     color: MyTheme.lightTheme().primaryColor,
-                      //   ),
-                      //   decoration: InputDecoration(
-                      //     labelText: "Image",
-                      //     prefixIcon: Icon(
-                      //       Icons.label,
-                      //       color: MyTheme.lightTheme().primaryColor,
-                      //     ),
-                      //     border: OutlineInputBorder(),
-                      //     labelStyle: new TextStyle(color: MyTheme.lightTheme().primaryColor),
-                      //   ),
-                      //   autovalidateMode: AutovalidateMode.onUserInteraction,
-                      //   validator: (value){
-                      //   if(value.isEmpty){ 
-                      //     return "Please fill the field!";
-                      //   }else{
-                      //     return null;
-                      //   }
-                      //   },
-                      // ),
-                      SizedBox(height:24),
                       TextFormField(
                         controller: ctrlName,
                         keyboardType: TextInputType.name,
@@ -267,9 +244,15 @@ class _EditProfileState extends State<EditProfile> {
                         },
                       ),
                       SizedBox(height:24),
+                      
                       imageFile == null ?
-                        Row(
+                        Column(
                           children: [
+                            Image(
+                              image: NetworkImage(avatar),
+                              width: 100,
+                            ),
+                            SizedBox(height:24),
                             ElevatedButton.icon(
                               onPressed: (){
                                 showFileDialog(context);
@@ -283,17 +266,18 @@ class _EditProfileState extends State<EditProfile> {
                             ),
                             SizedBox(height:24),
                             Padding(padding: EdgeInsets.fromLTRB(8, 0, 0, 0)),
-                            Text(
-                              "File Not Found.", 
-                              style: TextStyle(
-                                color: MyTheme.lightTheme().primaryColor,
-                              ),
-                            ),
                           ],
                         )
                       :
-                        Row(
+                        Column(
                           children: [
+                            Semantics(
+                              child: Image.file(
+                                File(imageFile.path),
+                                width: 100,
+                              )
+                            ),
+                            SizedBox(height:24), 
                             ElevatedButton.icon(
                               onPressed: (){
                                 showFileDialog(context);
@@ -305,23 +289,17 @@ class _EditProfileState extends State<EditProfile> {
                                 elevation: 0,
                               ),
                             ),
-                            SizedBox(height:24), 
-                            Semantics(
-                              child: Image.file(
-                                File(imageFile.path),
-                                width: 100,
-                              )
-                            )
+                            SizedBox(height:24),
                           ],
                         ),
-                      SizedBox(height:40),
+                      SizedBox(height:24),
                       ElevatedButton.icon(
                             onPressed: () async{
                               if(_formkey.currentState.validate()){
                                 setState(() {
                                   isLoading = true;
                                 });
-                                Users users = new Users("", ctrlName.text, ctrlPhone.text, ctrlEmail.text, ctrlPassword.text, "", 0, "", "");
+                                Users users = new Users("", ctrlName.text, ctrlPhone.text, ctrlEmail.text, ctrlPassword.text, "", 0, 1, "", "");
                                 await AuthServices.updateUser(users, imageFile).then((value){
                                   if(value == "success"){
                                     ActivityServices.showToast("Save profile sucessfull!", Colors.green);
@@ -331,7 +309,7 @@ class _EditProfileState extends State<EditProfile> {
                                     });
                                     Navigator.pop(context);
                                   }else{
-                                    ActivityServices.showToast("Save profile failed!", Colors.red);
+                                    ActivityServices.showToast("Save profile failed!" + value, Colors.red);
                                     setState(() {
                                       isLoading = false;
                                     });

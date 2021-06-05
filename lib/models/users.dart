@@ -8,6 +8,7 @@ class Users extends Equatable{
   final String password;
   final String avatar;
   final int modal;
+  final int currency;
   final String createdAt;
   final String updatedAt;
 
@@ -19,6 +20,7 @@ class Users extends Equatable{
     this.password,
     this.avatar,
     this.modal,
+    this.currency,
     this.createdAt,
     this.updatedAt,
   );
@@ -32,6 +34,7 @@ class Users extends Equatable{
     password,
     avatar,
     modal,
+    currency,
     createdAt,
     updatedAt,
   ];

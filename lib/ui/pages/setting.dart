@@ -13,11 +13,14 @@ class _SettingState extends State<Setting> {
       FirebaseFirestore.instance.collection("users");
 
   bool isLoading = false;
+  bool isClicked = false;
   final _formkey = GlobalKey<FormState>();
   final ctrlKwh = TextEditingController();
   final ctrlModal = TextEditingController();
+  int ctrlCurrency = 1;
 
   String modal = "";
+  int currency = 1;
 
   Future<void> getUser() async {
     await Firebase.initializeApp();
@@ -25,6 +28,7 @@ class _SettingState extends State<Setting> {
     await userCollection.doc(uid).get().then((value) {
       setState(() {
         modal = value['modal'].toString();
+        currency = value['currency'];
       });
     });
   }
@@ -38,6 +42,9 @@ class _SettingState extends State<Setting> {
   @override
   Widget build(BuildContext context) {
     ctrlModal.text = modal;
+    if(isClicked == false){
+      ctrlCurrency = currency;
+    }
     return Scaffold(
         appBar: AppBar(
           title: Text("Settings"),
@@ -53,6 +60,51 @@ class _SettingState extends State<Setting> {
                       key: _formkey,
                       child: Column(
                         children: [
+                          SizedBox(height: 12),
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: Text(
+                              "Currency",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 12),
+                          Container(
+                            width: double.infinity,
+                            child: 
+                              DropdownButton(
+                                value: ctrlCurrency,
+                                style: TextStyle(
+                                  color: MyTheme.lightTheme().primaryColor,
+                                  fontSize: 16,
+                                ),
+                                underline: Container(
+                                  height: 2,
+                                  color: Colors.black26,
+                                ),
+                                dropdownColor: MyTheme.lightTheme().scaffoldBackgroundColor,
+                                items: [
+                                  DropdownMenuItem(
+                                    child: Text("Rupiah"),
+                                    value: 1,
+                                  ),
+                                  DropdownMenuItem(
+                                    child: Text("Dollar"),
+                                    value: 2,
+                                  ),
+                                ],
+                                onChanged: (value) {
+                                  setState(() {
+                                    ctrlCurrency = value;
+                                    isClicked = true;
+                                  });
+                                }
+                              ),
+                            ),
                           SizedBox(height: 24),
                           Align(
                             alignment: Alignment.topLeft,
@@ -105,40 +157,15 @@ class _SettingState extends State<Setting> {
                             },
                           ),
                           SizedBox(height: 24),
-                          // TextFormField(
-                          //   controller: ctrlTime,
-                          //   keyboardType: TextInputType.number,
-                          //   style: TextStyle(
-                          //     color: MyTheme.lightTheme().primaryColor,
-                          //   ),
-                          //   decoration: InputDecoration(
-                          //     labelText: "Time Usage (Hours)",
-                          //     prefixIcon: Icon(
-                          //       Icons.lock_clock,
-                          //       color: MyTheme.lightTheme().primaryColor,
-                          //     ),
-                          //     border: OutlineInputBorder(),
-                          //     labelStyle: new TextStyle(
-                          //         color: MyTheme.lightTheme().primaryColor),
-                          //   ),
-                          //   autovalidateMode:
-                          //       AutovalidateMode.onUserInteraction,
-                          //   validator: (value) {
-                          //     if (value.isEmpty) {
-                          //       return "Please fill the field!";
-                          //     } else {
-                          //       return null;
-                          //     }
-                          //   },
-                          // ),
-                          SizedBox(height: 24),
                           ElevatedButton.icon(
                             onPressed: () async {
                               if(_formkey.currentState.validate()){
                                 setState(() {
                                   isLoading = true;
                                 });
-                                await AuthServices.updateSetting(int.parse(ctrlModal.text)).then((value){
+                                int money = int.parse(ctrlModal.text);
+                                int currency = ctrlCurrency;
+                                await AuthServices.updateSetting(money, currency).then((value){
                                   if(value == "success"){
                                     ActivityServices.showToast("Edit setting sucessfull!", Colors.green);
                                     setState(() {
@@ -160,6 +187,38 @@ class _SettingState extends State<Setting> {
                             label: Text("Save"),
                             style: ElevatedButton.styleFrom(
                               primary: MyTheme.lightTheme().primaryColor,
+                              elevation: 0,
+                              padding: EdgeInsets.symmetric(horizontal: 135, vertical: 7),
+                            )
+                          ),
+                          ElevatedButton.icon(
+                            onPressed: () async {
+                              if(_formkey.currentState.validate()){
+                                setState(() {
+                                  isLoading = true;
+                                });
+                                await DeviceServices.deleteAll().then((value){
+                                  if(value == true){
+                                    ActivityServices.showToast("Delete device sucessfull!", Colors.green);
+                                    setState(() {
+                                      isLoading = false;
+                                    });
+                                    Navigator.pop(context);
+                                  }else{
+                                    ActivityServices.showToast("Delete device failed!", Colors.red);
+                                    setState(() {
+                                      isLoading = false;
+                                    });
+                                  }
+                                });
+                              }else{
+                                ActivityServices.showToast("Please check form fields!", Colors.red);
+                              }
+                            },
+                            icon: Icon(Icons.delete),
+                            label: Text("Delete All"),
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.red,
                               elevation: 0,
                               padding: EdgeInsets.symmetric(horizontal: 135, vertical: 7),
                             )

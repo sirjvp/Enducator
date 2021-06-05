@@ -7,7 +7,7 @@ class MyTheme{
       backgroundColor: Colors.white,
       scaffoldBackgroundColor: Color(0xFF1D1E4E),
       primaryColor: Color(0xFFFCCF14),
-      accentColor: Colors.deepOrange[400],
+      accentColor: Color(0xFF2F3180),
       visualDensity: VisualDensity.adaptivePlatformDensity,
       brightness: Brightness.light,
       // fontFamily: GoogleFonts.lato().fontFamily,

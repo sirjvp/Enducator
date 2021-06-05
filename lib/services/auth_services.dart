@@ -32,6 +32,8 @@ class AuthServices {
       'email': users.email,
       'password': users.password,
       'avatar': users.avatar,
+      'modal': users.modal,
+      'currency': users.currency,
       'token': token,
       'isOn': 0,
       'createdAt': dateNow,
@@ -90,41 +92,31 @@ class AuthServices {
   static Future<String> updateUser(Users users, PickedFile imgFile) async {
     await Firebase.initializeApp();
     String dateNow = ActivityServices.dateNow();
+    String uid = auth.currentUser.uid;
     String msg = "";
-    String uid = "";
-
-    uid = auth.currentUser.uid;
-
-    userDoc = await userCollection.doc(uid).update({
-      'name': users.name,
-      'phone': users.phone,
-      'email': users.email,
-      'password': users.password,
-      'updatedAt': dateNow,
-    }).then((value) {
-      msg = "success";
-    }).catchError((onError) {
-      msg = onError;
-    });
-
+    userDoc = userCollection.doc(uid);
     if (userDoc != null) {
-      ref = FirebaseStorage.instance
-          .ref()
-          .child("images")
-          .child(userDoc.id + ".png");
-      uploadTask = ref.putFile(File(imgFile.path));
+      if(imgFile != null) {
+        ref = FirebaseStorage.instance.ref().child("images").child(userDoc.id + ".png");
+        uploadTask = ref.putFile(File(imgFile.path));
 
-      await uploadTask.whenComplete(() => ref.getDownloadURL().then(
-            (value) => imgUrl = value,
-          )
-      );
+        await uploadTask.whenComplete(() => ref.getDownloadURL().then(
+          (value) => imgUrl = value,
+        ));
 
-      userCollection.doc(userDoc.id).update(
+        await userCollection.doc(userDoc.id).update(
         {
-          'uid': userDoc.id,
           'avatar': imgUrl,
-        }
-      ).then((value) {
+        });
+      }
+
+      await userCollection.doc(userDoc.id).update({
+        'name': users.name,
+        'phone': users.phone,
+        'email': users.email,
+        'password': users.password,
+        'updatedAt': dateNow,
+      }).then((value) {
         msg = "success";
       }).catchError((onError) {
         msg = onError;
@@ -133,16 +125,15 @@ class AuthServices {
     return msg;
   }
 
-  static Future<String> updateSetting(int modal) async {
+  static Future<String> updateSetting(int modal, int currency) async {
     await Firebase.initializeApp();
     String dateNow = ActivityServices.dateNow();
+    String uid = auth.currentUser.uid;
     String msg = "";
-    String uid = "";
 
-    uid = auth.currentUser.uid;
-
-    userDoc = await userCollection.doc(uid).update({
+    await userCollection.doc(uid).update({
       'modal': modal,
+      'currency': currency,
       'updatedAt': dateNow,
     }).then((value) {
       msg = "success";

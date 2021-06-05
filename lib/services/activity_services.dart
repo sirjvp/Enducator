@@ -43,4 +43,11 @@ class ActivityServices{
     final priceFormat = NumberFormat.currency(locale: 'ID');
     return priceFormat.format(double.parse(price));
   }
+
+  static String toUS(String price){
+    double convert;
+    final priceFormat = NumberFormat.currency(locale: 'en_US');
+    convert = double.parse(price) / 14325.15;
+    return priceFormat.format(convert);
+  }
 }
