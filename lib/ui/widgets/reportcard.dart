@@ -10,8 +10,9 @@ class ReportCard extends StatefulWidget {
 
 class _ReportCardState extends State<ReportCard> {
   bool isLoading = false;
+  String showTotal = "";
 
-  void showFileDialog(BuildContext ctx, String rid){
+  void dialogBox(BuildContext ctx, String rid){
     showDialog(
       context: ctx,
       builder: (ctx){
@@ -30,7 +31,6 @@ class _ReportCardState extends State<ReportCard> {
                       
                     }else{
                       ActivityServices.showToast("Delete report failed!", Colors.red);
-                      
                     }
                   });
                 },
@@ -61,23 +61,26 @@ class _ReportCardState extends State<ReportCard> {
   @override
   Widget build(BuildContext context) {
     Calculate calculate = widget.calculate;
+    if(calculate.createdAt == '2'){
+      showTotal = ActivityServices.toUS(calculate.price.toString());
+    }else{
+      showTotal = ActivityServices.toIDR(calculate.price.toString());
+    }
     return GestureDetector(
       onTap: () async{
         String rid = calculate.reportId;
-        showFileDialog(context, rid);
+        dialogBox(context, rid);
       },
-      child: Card(
-        elevation: 1,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
-        child: Container(
+      child: Container(
           padding: EdgeInsets.fromLTRB(0, 0, 0, 8),
+          color: Colors.white,
           child: Column(
             children: [
               ListTile(
                 title: Row(
                   children: [
                     Container(
-                      width: 100,
+                      width: 110,
                       child: Text(
                         "Date",
                         style: TextStyle(fontSize: 10, fontWeight: FontWeight.normal, color: Colors.black38),
@@ -117,7 +120,7 @@ class _ReportCardState extends State<ReportCard> {
                 subtitle: Row(
                   children: [
                     Container(
-                      width: 100,
+                      width: 110,
                       child: Text(
                         calculate.time,
                         style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black),
@@ -146,7 +149,7 @@ class _ReportCardState extends State<ReportCard> {
                     Container(
                       width: 110,
                       child: Text(
-                        ActivityServices.toIDR(calculate.price.toString()),
+                        showTotal,
                         style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black),
                         maxLines: 1,
                         softWrap: true,
@@ -158,7 +161,6 @@ class _ReportCardState extends State<ReportCard> {
             ],
           ),
         ),
-      )
     );
   }
 }

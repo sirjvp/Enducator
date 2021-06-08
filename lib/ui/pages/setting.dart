@@ -14,13 +14,14 @@ class _SettingState extends State<Setting> {
 
   bool isLoading = false;
   bool isClicked = false;
-  final _formkey = GlobalKey<FormState>();
   final ctrlKwh = TextEditingController();
   final ctrlModal = TextEditingController();
   int ctrlCurrency = 1;
 
   String modal = "";
   int currency = 1;
+  String edit = "";
+  bool isSwitched = false;
 
   Future<void> getUser() async {
     await Firebase.initializeApp();
@@ -33,6 +34,135 @@ class _SettingState extends State<Setting> {
     });
   }
 
+  void dialogModal(BuildContext ctx, String edit){
+    showDialog(
+      context: ctx,
+      builder: (ctx){
+        return AlertDialog(
+          title: Text(edit, textAlign: TextAlign.center),
+          content: TextFormField(
+                    controller: ctrlModal,
+                    keyboardType: TextInputType.number,
+                    autovalidateMode:
+                      AutovalidateMode.onUserInteraction,
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return "Please fill the field!";
+                      } else {
+                        return null;
+                      }
+                    },
+                  ),
+          actions: [
+            Container(
+              padding: EdgeInsets.all(10),
+              child: GestureDetector(
+                onTap: () async{
+                  // if(_formkey.currentState.validate()){
+                    setState(() {
+                      isLoading = true;
+                    });
+                    double modal = double.parse(ctrlModal.text);
+                    int currency = ctrlCurrency;
+                    await AuthServices.updateSetting(modal, currency).then((value){
+                      if(value == "success"){
+                        ActivityServices.showToast("Save setting sucessfull!", Colors.green);
+                        setState(() {
+                          isLoading = false;
+                        });
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                      }else{
+                        ActivityServices.showToast("Save setting failed!", Colors.red);
+                        setState(() {
+                          isLoading = false;
+                        });
+                      }
+                    });
+                    // }else{
+                    //   ActivityServices.showToast("Please check form fields!", Colors.red);
+                    // }
+                },
+                child: 
+                  Text(
+                    "Save",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                ),
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.all(10),
+              child: GestureDetector(
+                onTap: (){
+                  Navigator.pop(context);
+                },
+                child:
+                  Text(
+                    "Cancel",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                ),
+              ),
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  void dialogBox(BuildContext ctx){
+    showDialog(
+      context: ctx,
+      builder: (ctx){
+        return AlertDialog(
+          title: Text("Confirmation"),
+          content: Text("Are you sure you want to delete all devices?"),
+          actions: [
+            Container(
+              padding: EdgeInsets.all(10),
+              child: GestureDetector(
+                onTap: () async{
+                  setState(() {
+                    isLoading = true;
+                  });
+                  await DeviceServices.deleteAll().then((value){
+                    if(value == true){
+                      ActivityServices.showToast("Delete all devices sucessfull!", Colors.green);
+                      setState(() {
+                        isLoading = false;
+                      });
+                      Navigator.pop(context);
+                    }else{
+                      ActivityServices.showToast("Delete all devices failed!", Colors.red);
+                      setState(() {
+                        isLoading = false;
+                      });
+                    }
+                  });
+                },
+                child: Text(
+                        "Yes",
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                ),
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.all(10),
+              child: GestureDetector(
+                onTap: (){
+                  Navigator.pop(context);
+                },
+                child: Text(
+                        "No",
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                ),
+              ),
+            )
+          ],
+        );
+      },
+    );
+  }
+
   @override
   void initState() {
     getUser();
@@ -42,12 +172,20 @@ class _SettingState extends State<Setting> {
   @override
   Widget build(BuildContext context) {
     ctrlModal.text = modal;
-    if(isClicked == false){
-      ctrlCurrency = currency;
+    if(currency == 1){
+      isSwitched = false;
+    }else{
+      isSwitched = true;
     }
     return Scaffold(
         appBar: AppBar(
-          title: Text("Settings"),
+          title: Text("Settings", style: TextStyle(color: Colors.white)),
+          centerTitle: true,
+          backgroundColor: MyTheme.lightTheme().accentColor,
+          brightness: Brightness.dark,
+          iconTheme: IconThemeData(
+            color: Colors.white, //change your color here
+          )
         ),
         resizeToAvoidBottomInset: false,
         body: Container(
@@ -55,211 +193,206 @@ class _SettingState extends State<Setting> {
             height: double.infinity,
             child: Stack(
               children: [
-                ListView(padding: EdgeInsets.all(16), children: [
-                  Form(
-                      key: _formkey,
-                      child: Column(
-                        children: [
-                          SizedBox(height: 12),
-                          Align(
-                            alignment: Alignment.topLeft,
-                            child: Text(
-                              "Currency",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.normal,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 12),
-                          Container(
-                            width: double.infinity,
-                            child: 
-                              DropdownButton(
-                                value: ctrlCurrency,
-                                style: TextStyle(
-                                  color: MyTheme.lightTheme().primaryColor,
-                                  fontSize: 16,
-                                ),
-                                underline: Container(
-                                  height: 2,
-                                  color: Colors.black26,
-                                ),
-                                dropdownColor: MyTheme.lightTheme().scaffoldBackgroundColor,
-                                items: [
-                                  DropdownMenuItem(
-                                    child: Text("Rupiah"),
-                                    value: 1,
+                Column(
+                  children: [
+                    Card(
+                      margin: EdgeInsets.fromLTRB(0, 24, 0, 0),
+                      elevation: 1,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(0.0)),
+                      child: Container(
+                        child: Column(
+                          children: [
+                            ListTile(
+                                  leading: Text(
+                                    "Change to dollar",
+                                    style: TextStyle(
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.normal),
+                                    maxLines: 1,
+                                    softWrap: true,
                                   ),
-                                  DropdownMenuItem(
-                                    child: Text("Dollar"),
-                                    value: 2,
+                                  trailing: 
+                                    Switch(
+                                      value: isSwitched,
+                                      onChanged: (value) async{
+                                        setState(() {
+                                          isSwitched = value;
+                                          print(isSwitched);
+                                          isLoading = true;
+                                        });
+                                        if(isSwitched == true){
+                                          currency = 2;
+                                        }else{
+                                          currency = 1;
+                                        }
+                                        double modal = double.parse(ctrlModal.text);
+                                        await AuthServices.updateSetting(modal, currency).then((value){
+                                          if(value == "success"){
+                                            ActivityServices.showToast("Edit setting sucessfull!", Colors.green);
+                                            setState(() {
+                                              isLoading = false;
+                                            });
+                                          }else{
+                                            ActivityServices.showToast("Save setting failed!", Colors.red);
+                                            setState(() {
+                                              isLoading = false;
+                                            });
+                                          }
+                                        });
+                                      },
+                                      activeTrackColor: Colors.lightGreenAccent,
+                                      activeColor: Colors.green,
+                                    ),
                                   ),
-                                ],
-                                onChanged: (value) {
-                                  setState(() {
-                                    ctrlCurrency = value;
-                                    isClicked = true;
-                                  });
-                                }
+                          ],
+                        ),
+                      ),
+                    ),
+                    Card(
+                      margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                      elevation: 1,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(0.0)),
+                      child: Container(
+                        child: Column(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                edit = "Edit Modal";
+                                dialogModal(context, edit);
+                              },
+                              child: ListTile(
+                                  leading: Text(
+                                    "1 kwh = Rupiah",
+                                    style: TextStyle(
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.normal),
+                                    maxLines: 1,
+                                    softWrap: true,
+                                  ),
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        modal,
+                                        style: TextStyle(
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.normal,
+                                            color: Colors.grey
+                                        ),
+                                        maxLines: 1,
+                                        softWrap: true,
+                                      ),
+                                      SizedBox(width: 5),
+                                      Icon(
+                                        Icons.arrow_forward_ios,
+                                        size: 15,
+                                        color: Colors.grey[400],
+                                      ),
+                                    ],
+                                  )),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Card(
+                      margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                      elevation: 1,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(0.0)),
+                      child: Container(
+                        child: Column(
+                          children: [
+                            GestureDetector(
+                              onTap: () async{
+                                dialogBox(context);
+                              },
+                              child: ListTile(
+                                  leading: Text(
+                                    "Delete all devices",
+                                    style: TextStyle(
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.normal),
+                                    maxLines: 1,
+                                    softWrap: true,
+                                  ),
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Icon(
+                                        Icons.arrow_forward_ios,
+                                        size: 15,
+                                        color: Colors.grey[400],
+                                      ),
+                                    ],
+                                  )
                               ),
                             ),
-                          SizedBox(height: 24),
-                          Align(
-                            alignment: Alignment.topLeft,
-                            child: Text(
-                              "1 kwh = Rupiah",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.normal,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 12),
-                          TextFormField(
-                            controller: ctrlModal,
-                            keyboardType: TextInputType.number,
-                            style: TextStyle(
-                              color: MyTheme.lightTheme().primaryColor,
-                            ),
-                            decoration: InputDecoration(
-                              // labelText: "Day Usage (Days)",
-                              prefixIcon: Icon(
-                                Icons.money,
-                                color: MyTheme.lightTheme().primaryColor,
-                              ),
-                              // border: OutlineInputBorder(),
-                              enabledBorder: new OutlineInputBorder(
-                                borderRadius: new BorderRadius.circular(5.0),
-                                borderSide: BorderSide(
-                                    color: MyTheme.lightTheme().primaryColor,
-                                    width: 2),
-                              ),
-                              focusedBorder: new OutlineInputBorder(
-                                borderRadius: new BorderRadius.circular(5.0),
-                                borderSide: BorderSide(
-                                    color: MyTheme.lightTheme().primaryColor,
-                                    width: 2),
-                              ),
-                              labelStyle: new TextStyle(
-                                  color: MyTheme.lightTheme().primaryColor),
-                            ),
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                            validator: (value) {
-                              if (value.isEmpty) {
-                                return "Please fill the field!";
-                              } else {
-                                return null;
-                              }
-                            },
-                          ),
-                          SizedBox(height: 24),
-                          ElevatedButton.icon(
-                            onPressed: () async {
-                              if(_formkey.currentState.validate()){
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 24),
+                    Card(
+                      margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                      elevation: 1,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(0.0)),
+                      child: Container(
+                        child: Column(
+                          children: [
+                            GestureDetector(
+                              onTap: () async{
                                 setState(() {
                                   isLoading = true;
                                 });
-                                int money = int.parse(ctrlModal.text);
-                                int currency = ctrlCurrency;
-                                await AuthServices.updateSetting(money, currency).then((value){
-                                  if(value == "success"){
-                                    ActivityServices.showToast("Edit setting sucessfull!", Colors.green);
+                                await AuthServices.signOut().then((value) {
+                                  if (value == true) {
                                     setState(() {
                                       isLoading = false;
                                     });
-                                    Navigator.pop(context);
-                                  }else{
-                                    ActivityServices.showToast("Save setting failed!", Colors.red);
+                                    ActivityServices.showToast(
+                                        "Logout success", Colors.green);
+                                    //menuju ke tahap selanjutnya
+                                    // Navigator.pushReplacementNamed(
+                                    //     context, Login.routeName);
+                                    bool logout = true;
+                                    Navigator.pop(context, logout);
+                                    //pushNamed = bisa kembali, ga ditutup
+                                  } else {
                                     setState(() {
                                       isLoading = false;
                                     });
+                                    ActivityServices.showToast(
+                                        "Logout failed", Colors.red);
                                   }
                                 });
-                              }else{
-                                ActivityServices.showToast("Please check form fields!", Colors.red);
-                              }
-                            },
-                            icon: Icon(Icons.save),
-                            label: Text("Save"),
-                            style: ElevatedButton.styleFrom(
-                              primary: MyTheme.lightTheme().primaryColor,
-                              elevation: 0,
-                              padding: EdgeInsets.symmetric(horizontal: 135, vertical: 7),
+                              },
+                              child: ListTile(
+                                  leading: Text(
+                                    "Log out",
+                                    style: TextStyle(
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.normal,
+                                        color: Colors.red,
+                                        
+                                        ),
+                                        textAlign: TextAlign.center,
+                                    maxLines: 1,
+                                    softWrap: true,
+                                  ),
+                              ),
                             )
-                          ),
-                          ElevatedButton.icon(
-                            onPressed: () async {
-                              if(_formkey.currentState.validate()){
-                                setState(() {
-                                  isLoading = true;
-                                });
-                                await DeviceServices.deleteAll().then((value){
-                                  if(value == true){
-                                    ActivityServices.showToast("Delete device sucessfull!", Colors.green);
-                                    setState(() {
-                                      isLoading = false;
-                                    });
-                                    Navigator.pop(context);
-                                  }else{
-                                    ActivityServices.showToast("Delete device failed!", Colors.red);
-                                    setState(() {
-                                      isLoading = false;
-                                    });
-                                  }
-                                });
-                              }else{
-                                ActivityServices.showToast("Please check form fields!", Colors.red);
-                              }
-                            },
-                            icon: Icon(Icons.delete),
-                            label: Text("Delete All"),
-                            style: ElevatedButton.styleFrom(
-                              primary: Colors.red,
-                              elevation: 0,
-                              padding: EdgeInsets.symmetric(horizontal: 135, vertical: 7),
-                            )
-                          ),
-                          SizedBox(height: 24),
-                          ElevatedButton.icon(
-                            onPressed: () async {
-                              setState(() {
-                                isLoading = true;
-                              });
-                              await AuthServices.signOut().then((value) {
-                                if (value == true) {
-                                  setState(() {
-                                    isLoading = false;
-                                  });
-                                  ActivityServices.showToast(
-                                      "Logout success", Colors.green);
-                                  //menuju ke tahap selanjutnya
-                                  Navigator.pushReplacementNamed(
-                                      context, Login.routeName);
-                                  //pushNamed = bisa kembali, ga ditutup
-                                } else {
-                                  setState(() {
-                                    isLoading = false;
-                                  });
-                                  ActivityServices.showToast(
-                                      "Logout failed", Colors.red);
-                                }
-                              });
-                            },
-                            icon: Icon(Icons.logout),
-                            label: Text("Logout"),
-                            style: ElevatedButton.styleFrom(
-                              primary: MyTheme.lightTheme().primaryColor,
-                              elevation: 0,
-                              padding: EdgeInsets.symmetric(horizontal: 135, vertical: 7),
-                            )
-                          ),
-                        ],
-                      )),
-                ]),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
                 isLoading == true ? ActivityServices.loadings() : Container()
               ],
             )));

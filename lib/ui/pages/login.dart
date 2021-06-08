@@ -11,6 +11,7 @@ class _LoginState extends State<Login> {
   final _formkey = GlobalKey<FormState>();
   final ctrlEmail = TextEditingController();
   final ctrlPassword = TextEditingController();
+  FocusNode myFocusNode = new FocusNode();
   bool isVisible = true;
   bool isLoading = false;
   String email = '';
@@ -20,46 +21,45 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Login'),
+          title: Text("Login", style: TextStyle(color: Colors.white)),
           centerTitle: true,
-          elevation: 0,
+          backgroundColor: MyTheme.lightTheme().accentColor,
+          brightness: Brightness.dark,
+          iconTheme: IconThemeData(
+            color: Colors.white, //change your color here
+          )
         ),
         resizeToAvoidBottomInset: false,
         body: Container(
             width: double.infinity,
             height: double.infinity,
-            padding: EdgeInsets.all(32),
             child: Stack(
               children: [
                 ListView(
+                  padding: EdgeInsets.all(32),
                   children: [
                     Form(
                         key: _formkey,
                         child: Column(
                           children: [
-                            SizedBox(height: 24),
+                            SizedBox(height: 100),
                             Image.asset("assets/images/logo.png", height: 100),
-                            SizedBox(height: 24),
+                            SizedBox(height: 40),
                             TextFormField(
                               controller: ctrlEmail,
                               keyboardType: TextInputType.emailAddress,
-                              style: TextStyle(
-                                color: MyTheme.lightTheme().primaryColor,
-                              ),
+                              // focusNode: myFocusNode,
                               decoration: InputDecoration(
                                 labelText: "Email",
+                                labelStyle: TextStyle(
+                                  color: myFocusNode.hasFocus ? Colors.black : Colors.black
+                                ),
                                 prefixIcon: Icon(
                                   Icons.mail_outline_rounded,
-                                  color: MyTheme.lightTheme().primaryColor,
+                                  color: myFocusNode.hasFocus ? Colors.grey: Colors.grey
                                 ),
-                                // enabledBorder: new OutlineInputBorder(
-                                //   borderRadius: new BorderRadius.circular(5.0),
-                                //   borderSide: BorderSide(
-                                //       color: MyTheme.lightTheme().primaryColor, width: 2),
-                                // ),
-                                // focusedBorder: new OutlineInputBorder(),
-                                border: OutlineInputBorder(),
-                                labelStyle: new TextStyle(color: MyTheme.lightTheme().primaryColor),
+                                filled: true,
+                                fillColor: Colors.white,
                               ),
                               autovalidateMode:
                                   AutovalidateMode.onUserInteraction,
@@ -80,17 +80,18 @@ class _LoginState extends State<Login> {
                             TextFormField(
                               controller: ctrlPassword,
                               obscureText: isVisible,
-                              style: TextStyle(
-                                color: MyTheme.lightTheme().primaryColor,
-                              ),
+                              // focusNode: myFocusNode,
                               decoration: InputDecoration(
                                 labelText: "Password",
+                                labelStyle: TextStyle(
+                                  color: myFocusNode.hasFocus ? Colors.black : Colors.black
+                                ),
                                 prefixIcon: Icon(
                                   Icons.vpn_key,
-                                  color: MyTheme.lightTheme().primaryColor,
+                                  color: myFocusNode.hasFocus ? Colors.grey: Colors.grey
                                 ),
-                                border: OutlineInputBorder(),
-                                labelStyle: new TextStyle(color: MyTheme.lightTheme().primaryColor),
+                                filled: true,
+                                fillColor: Colors.white,
                                 suffixIcon: new GestureDetector(
                                   onTap: () {
                                     setState(() {
@@ -99,7 +100,8 @@ class _LoginState extends State<Login> {
                                   },
                                   child: Icon(isVisible
                                       ? Icons.visibility
-                                      : Icons.visibility_off),
+                                      : Icons.visibility_off,
+                                      color: myFocusNode.hasFocus ? Colors.grey: Colors.grey),
                                 ),
                               ),
                               autovalidateMode:
@@ -150,7 +152,7 @@ class _LoginState extends State<Login> {
                               icon: Icon(Icons.login_rounded),
                               label: Text("Login"),
                               style: ElevatedButton.styleFrom(
-                                primary: MyTheme.lightTheme().primaryColor,
+                                primary: MyTheme.lightTheme().accentColor,
                                 elevation: 0,
                               ),
                             ),

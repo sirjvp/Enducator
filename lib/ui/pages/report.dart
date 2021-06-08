@@ -16,16 +16,19 @@ class _ReportState extends State<Report> {
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
+  bool isLoading = false;
+  bool exist = false;
   String uid = auth.currentUser.uid;
   double totalWatt = 0;
-  int totalPay = 0;
+  double totalPay = 0;
   double total = 0;
   int currency = 0;
   String showTotal = "-";
   int count = 0;
+  String rid = "";
 
   Future<void> getPay() async {
-    int pay = 0;
+    double pay = 0;
     await Firebase.initializeApp();
     String uid = auth.currentUser.uid;
     if(deviceCollection != null){
@@ -36,10 +39,11 @@ class _ReportState extends State<Report> {
       totalPay = pay;
     }
     totalKWh();
+    isExist();
   }
    
   Future<void> totalKWh() async {
-    int watt = 0;
+    double watt = 0;
     await Firebase.initializeApp();
     String uid = auth.currentUser.uid;
     await deviceCollection.doc(uid).collection("devices").get().then((QuerySnapshot querySnapshot) {
@@ -48,13 +52,29 @@ class _ReportState extends State<Report> {
         count++;
       });
     });
-    totalWatt = watt.toDouble() / 1000;
-    total = totalWatt * totalPay.toDouble();
+    totalWatt = watt / 1000;
+    total = totalWatt * totalPay;
     if(currency == 2){
       showTotal = ActivityServices.toUS(total.toString());
     }else{
       showTotal = ActivityServices.toIDR(total.toString());
     }
+    setState(() {
+      
+    });
+  }
+
+  Future<void> isExist() async {
+    await Firebase.initializeApp();
+    String uid = auth.currentUser.uid;
+    await deviceCollection.doc(uid).collection("reports").get().then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        if(doc.data()['time'] == ActivityServices.monthNow()){
+          exist = true;
+          rid = doc.data()['reportId'];
+        }
+      });
+    });
     setState(() {
       
     });
@@ -88,8 +108,8 @@ class _ReportState extends State<Report> {
               doc.data()['deviceDay'],
               doc.data()['deviceTime'],
               doc.data()['deviceImage'],
-              doc.data()['addBy'],
-              doc.data()['devicecreatedAt'],
+              totalPay.toString(),
+              currency.toString(),
               doc.data()['deviceupdatedAt'],
             );
             return CardView(devices: devices);
@@ -117,6 +137,68 @@ class _ReportState extends State<Report> {
     });
   }
 
+  void dialogBox(BuildContext ctx, Calculate calculate){
+    showDialog(
+      context: ctx,
+      builder: (ctx){
+        String rid = calculate.reportId;
+        int count = calculate.totalDevice;
+        double totalWatt = calculate.totalWatt;
+        double price = calculate.price;
+        String time = calculate.time;
+        return AlertDialog(
+          title: Text("Confirmation"),
+          content: Text("Do you want to save your report?"),
+          actions: [
+            Container(
+              padding: EdgeInsets.all(10),
+              child: GestureDetector(
+                onTap: () async{
+                  Calculate calculate = Calculate(rid, count, totalWatt, price, time, "", "");
+                  if(exist == false){
+                    await CalculateServices.addReport(calculate).then((value){
+                      if(value == true){
+                        ActivityServices.showToast("Save report sucessfull!", Colors.green);
+                        Navigator.pop(context);
+                      }else{
+                        ActivityServices.showToast("Save report failed!", Colors.red);
+                      }
+                    });
+                  }else{
+                    await CalculateServices.updateReport(calculate).then((value){
+                      if(value == true){
+                        ActivityServices.showToast("Update report sucessfull!", Colors.green);
+                        Navigator.pop(context);
+                      }else{
+                        ActivityServices.showToast("update report failed!", Colors.red);
+                      }
+                    });
+                  }
+                },
+                child: Text(
+                        "Yes",
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                ),
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.all(10),
+              child: GestureDetector(
+                onTap: (){
+                  Navigator.pop(context);
+                },
+                child: Text(
+                        "No",
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                ),
+              ),
+            )
+          ],
+        );
+      },
+    );
+  }
+
   @override
   void initState(){
     getPay();
@@ -127,7 +209,7 @@ class _ReportState extends State<Report> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("REPORT", style: TextStyle(color: Colors.white)),
+          title: Text("Report", style: TextStyle(color: Colors.white)),
           backgroundColor: MyTheme.lightTheme().accentColor,
           brightness: Brightness.dark,
         ),
@@ -171,8 +253,9 @@ class _ReportState extends State<Report> {
                 ListView(children: [
                   GestureDetector(
                     onTap: () {
-                      Calculate calculate = Calculate("", count, totalWatt, total, ActivityServices.monthNow(), "", "");
-                      Navigator.pushNamed(context, ReportDetail.routeName, arguments: calculate);
+                      Calculate calculate = Calculate(rid, count, totalWatt, total, ActivityServices.monthNow(), "", "");
+                      dialogBox(context, calculate);
+                      // Navigator.pushNamed(context, ReportDetail.routeName, arguments: calculate);
                     },
                     child: Card(
                       margin: EdgeInsets.fromLTRB(16, 32, 16, 16),
@@ -234,12 +317,13 @@ class _ReportState extends State<Report> {
                       ),
                     ),
                   ),
+                  Container(
+                    height: 430,
+                    width: double.infinity,
+                    child: Stack(children: [buildBody()])
+                  ),
                 ]
               ),
-            ),
-            Container(
-              padding: EdgeInsets.fromLTRB(0, 250, 0, 0),
-              child: Stack(children: [buildBody()])
             ),
           ]),
         ));

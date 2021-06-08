@@ -73,7 +73,7 @@ class _CardViewState extends State<CardView> {
                     Container(
                       width: 50,
                       child: Text(
-                        "Time",
+                        "Hours",
                         style: TextStyle(fontSize: 10, fontWeight: FontWeight.normal, color: Colors.black38),
                         maxLines: 1,
                         softWrap: true,
@@ -133,49 +133,6 @@ class _CardViewState extends State<CardView> {
                     ),
                   ]
                 ),
-                        
-                        // showModalBottomSheet(
-                        //   context: context,
-                        //   builder: (BuildContext ctx) {
-                        //     return Container(
-                        //       width: double.infinity,
-                        //       height: double.infinity,
-                        //       padding: EdgeInsets.all(32),
-                        //       child: Row(
-                        //         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        //         children: [
-                        //           ElevatedButton.icon(
-                        //             icon: Icon(CupertinoIcons.eye_fill),
-                        //             label: Text("Show Data"),
-                        //             onPressed: () {},
-                        //             style: ElevatedButton.styleFrom(
-                        //                 primary: Colors.blueGrey),
-                        //           ),
-                        //           ElevatedButton.icon(
-                        //             icon: Icon(CupertinoIcons.pencil),
-                        //             label: Text("Edit Data"),
-                        //             onPressed: () {},
-                        //           ),
-                        //           ElevatedButton.icon(
-                        //             icon: Icon(CupertinoIcons.trash_fill),
-                        //             label: Text("Delete Data"),
-                        //             onPressed: () async {
-                        //               bool result = await DeviceServices.deleteDevice(device.deviceId);
-                        //               if(result){
-                        //                 ActivityServices.showToast("Delete data success.", Colors.green);
-                        //               }else{
-                        //                 ActivityServices.showToast("Delete data failed.", Colors.red);
-                        //               }
-                        //             },
-                        //             style: ElevatedButton.styleFrom(
-                        //                 primary: Colors.red[600]),
-                        //           ),
-                        //         ],
-                        //       ),
-                        //     );
-                        //   },
-                        // );
-                      
               ),
             ],
           ),

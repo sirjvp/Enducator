@@ -6,7 +6,7 @@ class Devices extends Equatable{
   final int deviceWatt;
   final int deviceQuantity;
   final int deviceDay;
-  final int deviceTime;
+  final double deviceTime;
   final String deviceImage;
   final String addBy;
   final String createdAt;

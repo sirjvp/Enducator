@@ -125,7 +125,7 @@ class AuthServices {
     return msg;
   }
 
-  static Future<String> updateSetting(int modal, int currency) async {
+  static Future<String> updateSetting(double modal, int currency) async {
     await Firebase.initializeApp();
     String dateNow = ActivityServices.dateNow();
     String uid = auth.currentUser.uid;

@@ -7,7 +7,7 @@ class Users extends Equatable{
   final String email;
   final String password;
   final String avatar;
-  final int modal;
+  final double modal;
   final int currency;
   final String createdAt;
   final String updatedAt;

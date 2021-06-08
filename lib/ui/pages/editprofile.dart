@@ -13,7 +13,6 @@ class _EditProfileState extends State<EditProfile> {
       FirebaseFirestore.instance.collection("users");
 
   bool isLoading = false;
-  final _formkey = GlobalKey<FormState>();
   final ctrlName = TextEditingController();
   final ctrlEmail = TextEditingController();
   final ctrlPhone = TextEditingController();
@@ -26,34 +25,51 @@ class _EditProfileState extends State<EditProfile> {
   String phone = "";
   String password = "";
   String avatar = "";
+  String edit = "";
 
-  Future chooseFile(String type) async{
+  Future chooseFile(String type) async {
     ImageSource imgSrc;
-    if(type == "camera"){
+    if (type == "camera") {
       imgSrc = ImageSource.camera;
-    }else{
+    } else {
       imgSrc = ImageSource.gallery;
     }
 
-    final selectedImage = await imagePicker.getImage(
-      source: imgSrc,
-      imageQuality: 50
-    ); 
+    final selectedImage =
+        await imagePicker.getImage(source: imgSrc, imageQuality: 50);
     setState(() {
       imageFile = selectedImage;
+      isLoading = true;
+    });
+
+    Users users = new Users("", ctrlName.text, ctrlPhone.text, ctrlEmail.text, ctrlPassword.text, "", 0, 1, "", "");
+    await AuthServices.updateUser(users, imageFile).then((value){
+      if(value == "success"){
+        ActivityServices.showToast("Save profile sucessfull!", Colors.green);
+          setState(() {
+            isLoading = false;
+          });
+        Navigator.pop(context);
+        Navigator.pop(context);
+      }else{
+        ActivityServices.showToast("Save profile failed!", Colors.red);
+        setState(() {
+          isLoading = false;
+        });
+      }
     });
   }
 
-  void showFileDialog(BuildContext ctx){
+  void showFileDialog(BuildContext ctx) {
     showDialog(
       context: ctx,
-      builder: (ctx){
+      builder: (ctx) {
         return AlertDialog(
           title: Text("Confirmation"),
           content: Text("Pick Image from:"),
           actions: [
             ElevatedButton.icon(
-              onPressed: (){
+              onPressed: () {
                 chooseFile("camera");
               },
               icon: Icon(Icons.camera_alt),
@@ -63,7 +79,7 @@ class _EditProfileState extends State<EditProfile> {
               ),
             ),
             ElevatedButton.icon(
-              onPressed: (){
+              onPressed: () {
                 chooseFile("gallery");
               },
               icon: Icon(Icons.folder_outlined),
@@ -78,266 +94,493 @@ class _EditProfileState extends State<EditProfile> {
     );
   }
 
-  @override
-  void dispose(){
-    ctrlName.dispose();
-    ctrlEmail.dispose();
-    ctrlPhone.dispose();
-    ctrlPassword.dispose();
-    super.dispose();
+  void dialogName(BuildContext ctx, String edit){
+    showDialog(
+      context: ctx,
+      builder: (ctx){
+        return AlertDialog(
+          title: Text(edit, textAlign: TextAlign.center),
+          content: TextFormField(
+                    controller: ctrlName,
+                    keyboardType: TextInputType.number,
+                    autovalidateMode:
+                      AutovalidateMode.onUserInteraction,
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return "Please fill the field!";
+                      } else {
+                        return null;
+                      }
+                    },
+                  ),
+          actions: [
+            Container(
+              padding: EdgeInsets.all(10),
+              child: GestureDetector(
+                onTap: () async{
+                  setState(() {
+                  isLoading = true;
+                  });
+                  Users users = new Users("", ctrlName.text, ctrlPhone.text, ctrlEmail.text, ctrlPassword.text, "", 0, 1, "", "");
+                  await AuthServices.updateUser(users, imageFile).then((value){
+                    if(value == "success"){
+                      ActivityServices.showToast("Save profile sucessfull!", Colors.green);
+                      setState(() {
+                        isLoading = false;
+                      });
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                    }else{
+                      ActivityServices.showToast("Save profile failed!", Colors.red);
+                      setState(() {
+                        isLoading = false;
+                      });
+                    }
+                  });
+                },
+                child: 
+                  Text(
+                    "Save",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                ),
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.all(10),
+              child: GestureDetector(
+                onTap: (){
+                  Navigator.pop(context);
+                },
+                child:
+                  Text(
+                    "Cancel",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                ),
+              ),
+            )
+          ],
+        );
+      },
+    );
   }
 
-  void clearForm(){
-    ctrlName.clear();
-    ctrlEmail.clear();
-    ctrlPhone.clear();
-    ctrlPassword.clear();
-    setState(() {
-      imageFile = null;
-    });
+  void dialogPhone(BuildContext ctx, String edit){
+    showDialog(
+      context: ctx,
+      builder: (ctx){
+        return AlertDialog(
+          title: Text(edit, textAlign: TextAlign.center),
+          content: TextFormField(
+                    controller: ctrlPhone,
+                    keyboardType: TextInputType.number,
+                    autovalidateMode:
+                      AutovalidateMode.onUserInteraction,
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return "Please fill the field!";
+                      } else {
+                        return null;
+                      }
+                    },
+                  ),
+          actions: [
+            Container(
+              padding: EdgeInsets.all(10),
+              child: GestureDetector(
+                onTap: () async{
+                  setState(() {
+                  isLoading = true;
+                  });
+                  Users users = new Users("", ctrlName.text, ctrlPhone.text, ctrlEmail.text, ctrlPassword.text, "", 0, 1, "", "");
+                  await AuthServices.updateUser(users, imageFile).then((value){
+                    if(value == "success"){
+                      ActivityServices.showToast("Save profile sucessfull!", Colors.green);
+                      setState(() {
+                        isLoading = false;
+                      });
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                    }else{
+                      ActivityServices.showToast("Save profile failed!", Colors.red);
+                      setState(() {
+                        isLoading = false;
+                      });
+                    }
+                  });
+                },
+                child: 
+                  Text(
+                    "Save",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                ),
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.all(10),
+              child: GestureDetector(
+                onTap: (){
+                  Navigator.pop(context);
+                },
+                child:
+                  Text(
+                    "Cancel",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                ),
+              ),
+            )
+          ],
+        );
+      },
+    );
   }
 
-  Future<void> getUser() async {
-    await Firebase.initializeApp();
-    String uid = auth.currentUser.uid;
-    await userCollection.doc(uid).get().then((value) {
-      setState(() {
-        name = value['name'];
-        email = auth.currentUser.email;
-        phone = value['phone'];
-        password = value['password'];
-        avatar = value['avatar'];
-      });
-    });
+  void dialogPassword(BuildContext ctx, String password){
+    showDialog(
+      context: ctx,
+      builder: (ctx){
+        return AlertDialog(
+          title: Text(edit, textAlign: TextAlign.center),
+          content: TextFormField(
+                    controller: ctrlPassword,
+                    keyboardType: TextInputType.number,
+                    autovalidateMode:
+                      AutovalidateMode.onUserInteraction,
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return "Please fill the field!";
+                      } else {
+                        return null;
+                      }
+                    },
+                  ),
+          actions: [
+            Container(
+              padding: EdgeInsets.all(10),
+              child: GestureDetector(
+                onTap: () async{
+                  setState(() {
+                    isLoading = true;
+                  });
+                  if(ctrlPassword.text == password){
+                    setState(() {
+                        isLoading = false;
+                    });
+                    Navigator.pop(context);
+                    dialogNewPassword(context);
+                  }else{
+                    setState(() {
+                        isLoading = false;
+                    });
+                    ActivityServices.showToast("Password do not match", Colors.red);
+                  }
+                },
+                child: 
+                  Text(
+                    "Ok",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                ),
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.all(10),
+              child: GestureDetector(
+                onTap: (){
+                  Navigator.pop(context);
+                },
+                child:
+                  Text(
+                    "Cancel",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                ),
+              ),
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  void dialogNewPassword(BuildContext ctx){
+    showDialog(
+      context: ctx,
+      builder: (ctx){
+        ctrlPassword.text = "";
+        return AlertDialog(
+          title: Text("Enter your new password", textAlign: TextAlign.center),
+          content: TextFormField(
+                    controller: ctrlPassword,
+                    keyboardType: TextInputType.number,
+                    autovalidateMode:
+                      AutovalidateMode.onUserInteraction,
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return "Please fill the field!";
+                      } else {
+                        return null;
+                      }
+                    },
+                  ),
+          actions: [
+            Container(
+              padding: EdgeInsets.all(10),
+              child: GestureDetector(
+                onTap: () async{
+                  setState(() {
+                    isLoading = true;
+                  });
+                  Users users = new Users("", ctrlName.text, ctrlPhone.text, ctrlEmail.text, ctrlPassword.text, "", 0, 1, "", "");
+                  await AuthServices.updateUser(users, imageFile).then((value){
+                    if(value == "success"){
+                      ActivityServices.showToast("Save profile sucessfull!", Colors.green);
+                      setState(() {
+                        isLoading = false;
+                      });
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                    }else{
+                      ActivityServices.showToast("Save profile failed!", Colors.red);
+                      setState(() {
+                        isLoading = false;
+                      });
+                    }
+                  });
+                },
+                child: 
+                  Text(
+                    "Save",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                ),
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.all(10),
+              child: GestureDetector(
+                onTap: (){
+                  Navigator.pop(context);
+                },
+                child:
+                  Text(
+                    "Cancel",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                ),
+              ),
+            )
+          ],
+        );
+      },
+    );
   }
 
   @override
   void initState() {
-    getUser();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Users users = ModalRoute.of(context).settings.arguments;
-    // final ctrlName = new TextEditingController(text: name);
-    ctrlName.text = name;
-    ctrlEmail.text = email;
-    ctrlPhone.text = phone;
-    ctrlPassword.text = password;
+    Users users = ModalRoute.of(context).settings.arguments;
+    ctrlName.text = users.name;
+    ctrlEmail.text = users.email;
+    ctrlPhone.text = users.phone;
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Edit Profile"),
-      ),
-      resizeToAvoidBottomInset: false,
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        child: Stack(
-          children: [
-            ListView(
-              padding: EdgeInsets.all(16),
+        appBar: AppBar(
+          title: Text("Edit Profile", style: TextStyle(color: Colors.white)),
+          centerTitle: true,
+          backgroundColor: MyTheme.lightTheme().accentColor,
+          brightness: Brightness.dark,
+          iconTheme: IconThemeData(
+            color: Colors.white, //change your color here
+          )
+        ),
+        resizeToAvoidBottomInset: false,
+        body: Container(
+            width: double.infinity,
+            height: double.infinity,
+            child: Stack(
               children: [
-                Form(
-                  key: _formkey,
-                  child: Column(
-                    children: [
-                      SizedBox(height: 24),
-                      TextFormField(
-                        controller: ctrlName,
-                        keyboardType: TextInputType.name,
-                        style: TextStyle(
-                          color: MyTheme.lightTheme().primaryColor,
-                        ),
-                        decoration: InputDecoration(
-                          labelText: "Name",
-                          prefixIcon: Icon(
-                            Icons.label,
-                            color: MyTheme.lightTheme().primaryColor,
-                          ),
-                          border: OutlineInputBorder(),
-                          labelStyle: new TextStyle(color: MyTheme.lightTheme().primaryColor),
-                        ),
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        validator: (value){
-                        if(value.isEmpty){ 
-                          return "Please fill the field!";
-                        }else{
-                          return null;
-                        }
-                        },
-                      ),
-                      SizedBox(height:24),
-                      TextFormField(
-                        controller: ctrlEmail,
-                        keyboardType: TextInputType.number,
-                        style: TextStyle(
-                          color: MyTheme.lightTheme().primaryColor,
-                        ),
-                        // maxLines: 3,
-                        decoration: InputDecoration(
-                          labelText: "Email",
-                          prefixIcon: Icon(
-                            Icons.power,
-                            color: MyTheme.lightTheme().primaryColor,
-                          ),
-                          border: OutlineInputBorder(),
-                          labelStyle: new TextStyle(color: MyTheme.lightTheme().primaryColor),
-                        ),
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        validator: (value){
-                          if(value.isEmpty){ 
-                            return "Please fill the field!";
-                          }else{
-                            return null;
-                          }
-                        },
-                      ),
-                      SizedBox(height:24),
-                      TextFormField(
-                        controller: ctrlPhone,
-                        keyboardType: TextInputType.number,
-                        style: TextStyle(
-                          color: MyTheme.lightTheme().primaryColor,
-                        ),
-                        decoration: InputDecoration(
-                          labelText: "Phone",
-                          prefixIcon: Icon(
-                            Icons.confirmation_number,
-                            color: MyTheme.lightTheme().primaryColor,
-                          ),
-                          border: OutlineInputBorder(),
-                          labelStyle: new TextStyle(color: MyTheme.lightTheme().primaryColor),
-                        ),
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        validator: (value){
-                        if(value.isEmpty){ 
-                          return "Please fill the field!";
-                        }else{
-                          return null;
-                        }
-                        },
-                      ),
-                      SizedBox(height:24),
-                      TextFormField(
-                        controller: ctrlPassword,
-                        keyboardType: TextInputType.number,
-                        style: TextStyle(
-                          color: MyTheme.lightTheme().primaryColor,
-                        ),
-                        decoration: InputDecoration(
-                          labelText: "Password",
-                          prefixIcon: Icon(
-                            Icons.calendar_today,
-                            color: MyTheme.lightTheme().primaryColor,
-                          ),
-                          border: OutlineInputBorder(),
-                          labelStyle: new TextStyle(color: MyTheme.lightTheme().primaryColor),
-                        ),
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        validator: (value){
-                        if(value.isEmpty){ 
-                          return "Please fill the field!";
-                        }else{
-                          return null;
-                        }
-                        },
-                      ),
-                      SizedBox(height:24),
-                      
-                      imageFile == null ?
-                        Column(
+                Column(
+                  children: [
+                    Card(
+                      margin: EdgeInsets.fromLTRB(0, 24, 0, 0),
+                      elevation: 1,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(0.0)),
+                      child: Container(
+                        child: Column(
                           children: [
-                            Image(
-                              image: NetworkImage(avatar),
-                              width: 100,
-                            ),
-                            SizedBox(height:24),
-                            ElevatedButton.icon(
-                              onPressed: (){
+                            GestureDetector(
+                              onTap: () {
                                 showFileDialog(context);
-                              }, 
-                              icon: Icon(Icons.photo_camera),
-                              label: Text("Choose Photo"),
-                              style: ElevatedButton.styleFrom(
-                                primary: MyTheme.lightTheme().primaryColor,
-                                elevation: 0,
-                              ),
+                              },
+                              child: ListTile(
+                                  leading: Text(
+                                    "Profile Photo",
+                                    style: TextStyle(
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.normal),
+                                    maxLines: 1,
+                                    softWrap: true,
+                                  ),
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      CircleAvatar(
+                                        backgroundImage: NetworkImage(users.avatar),
+                                      ),
+                                      SizedBox(width: 5),
+                                      Icon(
+                                        Icons.arrow_forward_ios,
+                                        size: 15,
+                                        color: Colors.grey[400],
+                                      ),
+                                    ],
+                                  )),
                             ),
-                            SizedBox(height:24),
-                            Padding(padding: EdgeInsets.fromLTRB(8, 0, 0, 0)),
-                          ],
-                        )
-                      :
-                        Column(
-                          children: [
-                            Semantics(
-                              child: Image.file(
-                                File(imageFile.path),
-                                width: 100,
-                              )
-                            ),
-                            SizedBox(height:24), 
-                            ElevatedButton.icon(
-                              onPressed: (){
-                                showFileDialog(context);
-                              }, 
-                              icon: Icon(Icons.photo_camera),
-                              label: Text("Replace Photo"),
-                              style: ElevatedButton.styleFrom(
-                                primary: MyTheme.lightTheme().primaryColor,
-                                elevation: 0,
-                              ),
-                            ),
-                            SizedBox(height:24),
                           ],
                         ),
-                      SizedBox(height:24),
-                      ElevatedButton.icon(
-                            onPressed: () async{
-                              if(_formkey.currentState.validate()){
-                                setState(() {
-                                  isLoading = true;
-                                });
-                                Users users = new Users("", ctrlName.text, ctrlPhone.text, ctrlEmail.text, ctrlPassword.text, "", 0, 1, "", "");
-                                await AuthServices.updateUser(users, imageFile).then((value){
-                                  if(value == "success"){
-                                    ActivityServices.showToast("Save profile sucessfull!", Colors.green);
-                                    clearForm();
-                                    setState(() {
-                                      isLoading = false;
-                                    });
-                                    Navigator.pop(context);
-                                  }else{
-                                    ActivityServices.showToast("Save profile failed!" + value, Colors.red);
-                                    setState(() {
-                                      isLoading = false;
-                                    });
-                                  }
-                                });
-                              }else{
-                                ActivityServices.showToast("Please check form fields!", Colors.red);
-                              }
-                            }, 
-                            icon: Icon(Icons.save),
-                            label: Text("Save Profile"),
-                            style: ElevatedButton.styleFrom(
-                              primary: MyTheme.lightTheme().primaryColor,
-                              elevation: 0,
-                              padding: EdgeInsets.symmetric(horizontal: 135, vertical: 7),
+                      ),
+                    ),
+                    Card(
+                      margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                      elevation: 1,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(0.0)),
+                      child: Container(
+                        child: Column(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                edit = "Edit Name";
+                                dialogName(context, edit);
+                              },
+                              child: ListTile(
+                                  leading: Text(
+                                    "Name",
+                                    style: TextStyle(
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.normal),
+                                    maxLines: 1,
+                                    softWrap: true,
+                                  ),
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        ctrlName.text,
+                                        style: TextStyle(
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.normal,
+                                            color: Colors.grey
+                                        ),
+                                        maxLines: 1,
+                                        softWrap: true,
+                                      ),
+                                      SizedBox(width: 5),
+                                      Icon(
+                                        Icons.arrow_forward_ios,
+                                        size: 15,
+                                        color: Colors.grey[400],
+                                      ),
+                                    ],
+                                  )),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Card(
+                      margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                      elevation: 1,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(0.0)),
+                      child: Container(
+                        child: Column(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                edit = "Edit Phone";
+                                dialogPhone(context, edit);
+                              },
+                              child: ListTile(
+                                  leading: Text(
+                                    "Phone",
+                                    style: TextStyle(
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.normal),
+                                    maxLines: 1,
+                                    softWrap: true,
+                                  ),
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        ctrlPhone.text,
+                                        style: TextStyle(
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.normal,
+                                            color: Colors.grey
+                                        ),
+                                        maxLines: 1,
+                                        softWrap: true,
+                                      ),
+                                      SizedBox(width: 5),
+                                      Icon(
+                                        Icons.arrow_forward_ios,
+                                        size: 15,
+                                        color: Colors.grey[400],
+                                      ),
+                                    ],
+                                  )),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Card(
+                      margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                      elevation: 1,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(0.0)),
+                      child: Container(
+                        child: Column(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                edit = "Enter your current password";
+                                dialogPassword(context, users.password);
+                              },
+                              child: ListTile(
+                                  leading: Text(
+                                    "Change password",
+                                    style: TextStyle(
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.normal),
+                                    maxLines: 1,
+                                    softWrap: true,
+                                  ),
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Icon(
+                                        Icons.arrow_forward_ios,
+                                        size: 15,
+                                        color: Colors.grey[400],
+                                      ),
+                                    ],
+                                  )),
                             )
+                          ],
+                        ),
                       ),
-                    ],
-                  )
+                    ),
+                  ],
                 ),
-              ]
-            ),
-            isLoading == true
-              ? ActivityServices.loadings()
-              : Container()
-          ],
-        )
-      )
-    );
+                isLoading == true ? ActivityServices.loadings() : Container()
+              ],
+            )));
   }
 }

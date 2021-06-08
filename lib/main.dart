@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:double_back_to_close/double_back_to_close.dart';
 import 'package:electricity_calc/shared/shared.dart';
 import 'package:electricity_calc/ui/pages/pages.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -24,6 +25,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      // home: DoubleBack(
+      //     message:"Press back again to close",
+      //     child: Home()),
+      // home: AnimatedSplashScreen(splash: Image.asset("assets/images/logo.png", height: 150), nextScreen: Login.routeName),
       debugShowCheckedModeBanner: false,
       title: "Electricity Calculator",
       theme: MyTheme.lightTheme(),

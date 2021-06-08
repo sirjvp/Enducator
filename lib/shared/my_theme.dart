@@ -24,7 +24,7 @@ class MyTheme{
       accentColor: Colors.deepOrange[400],
       visualDensity: VisualDensity.adaptivePlatformDensity,
       brightness: Brightness.dark,
-      // fontFamily: GoogleFonts.lato().fontFamily,
+      fontFamily: GoogleFonts.lato().fontFamily,
     );
   }
 }

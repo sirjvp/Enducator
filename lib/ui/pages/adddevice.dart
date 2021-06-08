@@ -16,6 +16,7 @@ class _AddDeviceState extends State<AddDevice> {
   final ctrlDay = TextEditingController();
   final ctrlTime = TextEditingController();
   int ctrlImage = 1;
+  FocusNode myFocusNode = new FocusNode();
 
   @override
   void dispose() {
@@ -68,17 +69,17 @@ class _AddDeviceState extends State<AddDevice> {
       ctrlDay.text = "30";
       ctrlTime.text = "2";
     }else if(ctrlImage == 7){
-      ctrlName.text = "Water";
-      ctrlWatt.text = "500";
+      ctrlName.text = "Water Pump";
+      ctrlWatt.text = "250";
       ctrlQuantity.text = "1";
       ctrlDay.text = "30";
-      ctrlTime.text = "2";
+      ctrlTime.text = "5";
     }else if(ctrlImage == 8){
       ctrlName.text = "Refrigerator (Large)";
       ctrlWatt.text = "780";
       ctrlQuantity.text = "1";
-      ctrlDay.text = "24";
-      ctrlTime.text = "30";
+      ctrlDay.text = "30";
+      ctrlTime.text = "24";
     }else if(ctrlImage == 9){
       ctrlName.text = "Microwave";
       ctrlWatt.text = "1000";
@@ -101,9 +102,13 @@ class _AddDeviceState extends State<AddDevice> {
     
     return Scaffold(
         appBar: AppBar(
-          title: Text("ADD DEVICE", style: TextStyle(color: Colors.white)),
+          title: Text("Add Device", style: TextStyle(color: Colors.white)),
+          centerTitle: true,
           backgroundColor: MyTheme.lightTheme().accentColor,
           brightness: Brightness.dark,
+          iconTheme: IconThemeData(
+            color: Colors.white, //change your color here
+          )
         ),
         resizeToAvoidBottomInset: false,
         body: Container(
@@ -126,7 +131,7 @@ class _AddDeviceState extends State<AddDevice> {
                             DropdownButton(
                               value: ctrlImage,
                               style: TextStyle(
-                                color: MyTheme.lightTheme().primaryColor,
+                                color: Colors.white,
                                 fontSize: 16,
                               ),
                               underline: Container(
@@ -187,18 +192,18 @@ class _AddDeviceState extends State<AddDevice> {
                           TextFormField(
                             controller: ctrlName,
                             keyboardType: TextInputType.name,
-                            style: TextStyle(
-                              color: MyTheme.lightTheme().primaryColor,
-                            ),
+                            // focusNode: myFocusNode,
                             decoration: InputDecoration(
                               labelText: "Name",
+                              labelStyle: TextStyle(
+                                color: myFocusNode.hasFocus ? Colors.black : Colors.black
+                              ),
                               prefixIcon: Icon(
                                 Icons.label,
-                                color: MyTheme.lightTheme().primaryColor,
+                                color: myFocusNode.hasFocus ? Colors.grey: Colors.grey
                               ),
-                              border: OutlineInputBorder(),
-                              labelStyle: new TextStyle(
-                                  color: MyTheme.lightTheme().primaryColor),
+                              filled: true,
+                              fillColor: Colors.white,
                             ),
                             autovalidateMode:
                                 AutovalidateMode.onUserInteraction,
@@ -214,19 +219,18 @@ class _AddDeviceState extends State<AddDevice> {
                           TextFormField(
                             controller: ctrlWatt,
                             keyboardType: TextInputType.number,
-                            style: TextStyle(
-                              color: MyTheme.lightTheme().primaryColor,
-                            ),
-                            // maxLines: 3,
+                            // focusNode: myFocusNode,
                             decoration: InputDecoration(
                               labelText: "Watt",
+                              labelStyle: TextStyle(
+                                color: myFocusNode.hasFocus ? Colors.black : Colors.black
+                              ),
                               prefixIcon: Icon(
                                 Icons.power,
-                                color: MyTheme.lightTheme().primaryColor,
+                                color: myFocusNode.hasFocus ? Colors.grey: Colors.grey
                               ),
-                              border: OutlineInputBorder(),
-                              labelStyle: new TextStyle(
-                                  color: MyTheme.lightTheme().primaryColor),
+                              filled: true,
+                              fillColor: Colors.white,
                             ),
                             autovalidateMode:
                                 AutovalidateMode.onUserInteraction,
@@ -242,18 +246,18 @@ class _AddDeviceState extends State<AddDevice> {
                           TextFormField(
                             controller: ctrlQuantity,
                             keyboardType: TextInputType.number,
-                            style: TextStyle(
-                              color: MyTheme.lightTheme().primaryColor,
-                            ),
+                            // focusNode: myFocusNode,
                             decoration: InputDecoration(
                               labelText: "Quantity",
+                              labelStyle: TextStyle(
+                                color: myFocusNode.hasFocus ? Colors.black : Colors.black
+                              ),
                               prefixIcon: Icon(
                                 Icons.confirmation_number,
-                                color: MyTheme.lightTheme().primaryColor,
+                                color: myFocusNode.hasFocus ? Colors.grey: Colors.grey
                               ),
-                              border: OutlineInputBorder(),
-                              labelStyle: new TextStyle(
-                                  color: MyTheme.lightTheme().primaryColor),
+                              filled: true,
+                              fillColor: Colors.white,
                             ),
                             autovalidateMode:
                                 AutovalidateMode.onUserInteraction,
@@ -269,18 +273,18 @@ class _AddDeviceState extends State<AddDevice> {
                           TextFormField(
                             controller: ctrlDay,
                             keyboardType: TextInputType.number,
-                            style: TextStyle(
-                              color: MyTheme.lightTheme().primaryColor,
-                            ),
+                            // focusNode: myFocusNode,
                             decoration: InputDecoration(
                               labelText: "Day Usage (Days)",
+                              labelStyle: TextStyle(
+                                color: myFocusNode.hasFocus ? Colors.black : Colors.black
+                              ),
                               prefixIcon: Icon(
                                 Icons.calendar_today,
-                                color: MyTheme.lightTheme().primaryColor,
+                                color: myFocusNode.hasFocus ? Colors.grey: Colors.grey
                               ),
-                              border: OutlineInputBorder(),
-                              labelStyle: new TextStyle(
-                                  color: MyTheme.lightTheme().primaryColor),
+                              filled: true,
+                              fillColor: Colors.white,
                             ),
                             autovalidateMode:
                                 AutovalidateMode.onUserInteraction,
@@ -296,18 +300,18 @@ class _AddDeviceState extends State<AddDevice> {
                           TextFormField(
                             controller: ctrlTime,
                             keyboardType: TextInputType.number,
-                            style: TextStyle(
-                              color: MyTheme.lightTheme().primaryColor,
-                            ),
+                            // focusNode: myFocusNode,
                             decoration: InputDecoration(
                               labelText: "Time Usage (Hours)",
+                              labelStyle: TextStyle(
+                                color: myFocusNode.hasFocus ? Colors.black : Colors.black
+                              ),
                               prefixIcon: Icon(
                                 Icons.lock_clock,
-                                color: MyTheme.lightTheme().primaryColor,
+                                color: myFocusNode.hasFocus ? Colors.grey: Colors.grey
                               ),
-                              border: OutlineInputBorder(),
-                              labelStyle: new TextStyle(
-                                  color: MyTheme.lightTheme().primaryColor),
+                              filled: true,
+                              fillColor: Colors.white,
                             ),
                             autovalidateMode:
                                 AutovalidateMode.onUserInteraction,
@@ -332,7 +336,7 @@ class _AddDeviceState extends State<AddDevice> {
                                       int.parse(ctrlWatt.text),
                                       int.parse(ctrlQuantity.text),
                                       int.parse(ctrlDay.text),
-                                      int.parse(ctrlTime.text),
+                                      double.parse(ctrlTime.text),
                                       ctrlImage.toString(),
                                       FirebaseAuth.instance.currentUser.uid,
                                       "",
@@ -360,7 +364,7 @@ class _AddDeviceState extends State<AddDevice> {
                               icon: Icon(Icons.save),
                               label: Text("Save Device"),
                               style: ElevatedButton.styleFrom(
-                                primary: MyTheme.lightTheme().primaryColor,
+                                primary: MyTheme.lightTheme().accentColor,
                                 elevation: 0,
                                 padding: EdgeInsets.symmetric(
                                     horizontal: 135, vertical: 7),
